@@ -285,6 +285,13 @@ def format_new_bad_only_report(
 
     if not new_bad:
         lines.append("本次没有新增异常（异常项可能已在之前的运行中告警过）。")
+        if bad:
+            lines.append("")
+            lines.append("当前仍异常的 App：")
+            for r in bad:
+                c = r.check
+                hs = "" if c.http_status is None else f" http={c.http_status}"
+                lines.append(f"- {r.name} (id={r.app_id}){hs} {c.detail}")
         lines.append("")
         return "\n".join(lines).strip(), new_bad, bad
 
