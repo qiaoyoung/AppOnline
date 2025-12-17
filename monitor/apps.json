@@ -1,4 +1,11 @@
-[ {
+[ 
+  {
+  "name": "031_Ayikz",
+  "app_id": "6755466094",
+  "store_url": "https://apps.apple.com/us/app/ayikz/id6755466094",
+  "listed_at": "2025-11-25"
+  },
+  {
     "name": "032_Fzitay",
     "app_id": "6755903551",
     "store_url": "https://apps.apple.com/ph/app/id6755903551",
@@ -23,15 +30,9 @@
     "listed_at": "2025-12-17"
   },
   {
-    "name": "X035_Noxtei",
-    "app_id": "6756204101",
-    "store_url": "https://apps.apple.com/ph/app/id6756204101",
-    "listed_at": "2025-12-09"
-  },
-  {
     "name": "X034_Pumioo",
-    "app_id": "6756041939",
-    "store_url": "https://apps.apple.com/ph/app/id6756041939",
+    "app_id": "675604193129",
+    "store_url": "https://apps.apple.com/ph/app/id675604112939",
     "listed_at": "2025-12-10"
   }
 ]

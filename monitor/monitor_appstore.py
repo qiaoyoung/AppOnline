@@ -40,8 +40,8 @@ class AppCheckResult:
         if (not self.ok) and self.listed_at is not None:
             now = datetime.now(timezone.utc)
             delta = now - self.listed_at.astimezone(timezone.utc)
-            dur = f"（上架至今约 {format_timedelta(delta.total_seconds())}）"
-        return f"{ok_str} {self.name} (id={self.app_id}){dur}"
+            dur = f"（{format_timedelta(delta.total_seconds())}）"
+        return f"{ok_str} {self.name}{dur}"
 
 
 def _env(name: str, default: str = "") -> str:
@@ -89,6 +89,8 @@ def _now_iso(tz_name: str) -> str:
     else:
         offset = 0
     dt = datetime.now(timezone.utc).astimezone(timezone(timedelta(seconds=offset)))
+    if offset == 8 * 3600:
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
     return dt.strftime("%Y-%m-%d %H:%M:%S %z")
 
 
@@ -174,6 +176,28 @@ def format_timedelta(total_seconds: float) -> str:
     return f"{days}天"
 
 
+def format_reason(http_status: Optional[int], detail: str) -> str:
+    if http_status is None:
+        d = (detail or "").strip()
+        if d:
+            return f"网络异常/超时（{d}）"
+        return "网络异常/超时"
+
+    if http_status == 404:
+        return "404（强信号：可能下架/该区不可用）"
+    if http_status == 410:
+        return "410（强信号：资源已移除/下架）"
+    if http_status == 403:
+        return "403（可能触发风控/需要验证/地区限制）"
+    if http_status == 429:
+        return "429（请求过多：被限流）"
+    if 500 <= http_status <= 599:
+        return f"{http_status}（App Store 服务器异常/临时故障）"
+    if 400 <= http_status <= 499:
+        return f"{http_status}（客户端错误：页面不可用/跳转异常）"
+    return f"{http_status}（页面不可访问）"
+
+
 def store_page_probe(url: str, timeout_seconds: int = 10) -> Tuple[bool, Optional[int], str]:
     headers = {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
@@ -239,17 +263,21 @@ def format_report(results: List[AppCheckResult], tz_name: str) -> str:
 def format_bad_only_report(results: List[AppCheckResult], tz_name: str) -> str:
     bad = [r for r in results if not r.ok]
     lines: List[str] = []
-    lines.append(f"App Store 上架状态监控（仅异常）- {_now_iso(tz_name)}")
+    lines.append(f"App Store 上架状态监控 - {_now_iso(tz_name)}")
     lines.append(f"异常 {len(bad)} / 总数 {len(results)}")
     lines.append("")
     for r in bad:
-        lines.append(r.summary_line())
         c = r.check
-        hs = "" if c.http_status is None else f" http={c.http_status}"
-        lines.append(f"- FAIL{hs} {c.detail}")
-        lines.append(f"- URL {r.store_url}")
+        dur = ""
         if r.listed_at is not None:
-            lines.append(f"- 上架时间 listed_at: {r.listed_at.strftime('%Y-%m-%d %H:%M:%S %z')}")
+            now = datetime.now(timezone.utc)
+            delta = now - r.listed_at.astimezone(timezone.utc)
+            dur = f"（{format_timedelta(delta.total_seconds())}）"
+        lines.append(f"❌ 异常 {r.name}{dur}")
+        lines.append(f"- 地址：{r.store_url}")
+        if r.listed_at is not None:
+            lines.append(f"- 上架时间：{r.listed_at.strftime('%Y-%m-%d')}")
+        lines.append(f"- 原因：{format_reason(c.http_status, c.detail)}")
         lines.append("")
     return "\n".join(lines).strip()
 
@@ -279,7 +307,7 @@ def format_new_bad_only_report(
             new_bad.append(r)
 
     lines: List[str] = []
-    lines.append(f"App Store 上架状态监控（仅新增异常）- {_now_iso(tz_name)}")
+    lines.append(f"App Store 上架状态监控 - {_now_iso(tz_name)}")
     lines.append(f"新增异常 {len(new_bad)} / 当前异常 {len(bad)} / 总数 {len(results)}")
     lines.append("")
 
@@ -290,19 +318,22 @@ def format_new_bad_only_report(
             lines.append("当前仍异常的 App：")
             for r in bad:
                 c = r.check
-                hs = "" if c.http_status is None else f" http={c.http_status}"
-                lines.append(f"- {r.name} (id={r.app_id}){hs} {c.detail}")
+                lines.append(f"- {r.name}：{format_reason(c.http_status, c.detail)}")
         lines.append("")
         return "\n".join(lines).strip(), new_bad, bad
 
     for r in new_bad:
-        lines.append(r.summary_line())
         c = r.check
-        hs = "" if c.http_status is None else f" http={c.http_status}"
-        lines.append(f"- FAIL{hs} {c.detail}")
-        lines.append(f"- URL {r.store_url}")
+        dur = ""
         if r.listed_at is not None:
-            lines.append(f"- 上架时间 listed_at: {r.listed_at.strftime('%Y-%m-%d %H:%M:%S %z')}")
+            now = datetime.now(timezone.utc)
+            delta = now - r.listed_at.astimezone(timezone.utc)
+            dur = f"（{format_timedelta(delta.total_seconds())}）"
+        lines.append(f"❌ 异常 {r.name}{dur}")
+        lines.append(f"- 地址：{r.store_url}")
+        if r.listed_at is not None:
+            lines.append(f"- 上架时间：{r.listed_at.strftime('%Y-%m-%d')}")
+        lines.append(f"- 原因：{format_reason(c.http_status, c.detail)}")
         lines.append("")
 
     return "\n".join(lines).strip(), new_bad, bad
