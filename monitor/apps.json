@@ -30,15 +30,15 @@
     "listed_at": "2025-12-17"
   },
   {
-    "name": "X034_Pumioo",
-    "app_id": "63129",
-    "store_url": "https://apps.apple.com/ph/app/id123131",
+    "name": "X034_test1",
+    "app_id": "63129890",
+    "store_url": "https://apps.apple.com/ph/app/id123456789012",
     "listed_at": "2025-12-10"
   },
   {
-    "name": "X038_test",
-    "app_id": "6733231",
-    "store_url": "https://apps.apple.com/ph/app/id112131",
+    "name": "X038_test2",
+    "app_id": "672131231",
+    "store_url": "https://apps.apple.com/ph/app/id1234556778",
     "listed_at": "2025-12-10"
   }
 ]
