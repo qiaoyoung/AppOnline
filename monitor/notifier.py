@@ -38,9 +38,22 @@ def notify_serverchan(sendkey: str, title: str, desp: str, timeout_seconds: int 
     if not sendkey:
         return NotifyResult(ok=False, detail="SERVERCHAN_SENDKEY 为空")
 
+    def _to_serverchan_markdown(text: str) -> str:
+        # Server酱 desp 按 Markdown 渲染；单个换行在 Markdown 里可能会被折叠成空格
+        # 这里用“行尾两个空格 + 换行”强制每行换行显示
+        lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+        out_lines = []
+        for line in lines:
+            if line.strip() == "":
+                out_lines.append("")
+            else:
+                out_lines.append(line + "  ")
+        return "\n".join(out_lines)
+
     url = f"https://sctapi.ftqq.com/{sendkey}.send"
     try:
-        resp = requests.post(url, data={"title": title, "desp": desp}, timeout=timeout_seconds)
+        desp_md = _to_serverchan_markdown(desp)
+        resp = requests.post(url, data={"title": title, "desp": desp_md}, timeout=timeout_seconds)
         if resp.status_code != 200:
             return NotifyResult(ok=False, detail=f"Server酱返回状态码异常: {resp.status_code}, body={resp.text[:2000]}")
         try:
