@@ -169,15 +169,9 @@ def format_timedelta(total_seconds: float) -> str:
     if seconds < 0:
         seconds = 0
     days = seconds // 86400
-    seconds %= 86400
-    hours = seconds // 3600
-    seconds %= 3600
-    minutes = seconds // 60
-    if days > 0:
-        return f"{days}天{hours}小时{minutes}分钟"
-    if hours > 0:
-        return f"{hours}小时{minutes}分钟"
-    return f"{minutes}分钟"
+    if days <= 0:
+        return "不足1天"
+    return f"{days}天"
 
 
 def store_page_probe(url: str, timeout_seconds: int = 10) -> Tuple[bool, Optional[int], str]:
@@ -373,7 +367,7 @@ def main() -> int:
                 print(send_report)
                 print("")
                 print(f"notify: ok={ok} detail={detail}")
-                return 2
+                return 0 if ok else 2
             ok, detail = True, "skip notify (no new bad)"
             print(send_report)
         else:
