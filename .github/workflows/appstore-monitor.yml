@@ -1,0 +1,50 @@
+name: AppStore Monitor
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r monitor/requirements.txt
+
+      - name: Restore monitor state cache
+        uses: actions/cache@v4
+        with:
+          path: monitor/.state/
+          key: appstore-monitor-state-${{ github.repository }}-${{ github.run_id }}
+          restore-keys: |
+            appstore-monitor-state-${{ github.repository }}-
+
+      - name: Run monitor
+        env:
+          APPS_FILE: monitor/apps.json
+          NOTIFY_CHANNEL: ${{ secrets.NOTIFY_CHANNEL }}
+          WECOM_WEBHOOK_URL: ${{ secrets.WECOM_WEBHOOK_URL }}
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          SERVERCHAN_TITLE: App Store 监控告警
+          TZ_NAME: Asia/Shanghai
+          RETRIES: "2"
+          RETRY_BACKOFF_SECONDS: "1.0"
+          TIMEOUT_SECONDS: "10"
+          ALERT_MODE: transition
+          STATE_FILE: monitor/.state/appstore_state.json
+        run: |
+          python monitor/monitor_appstore.py
+
+
