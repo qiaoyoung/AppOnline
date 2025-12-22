@@ -2,25 +2,25 @@
   {
   "name": "031_Ayikz",
   "app_id": "6755466094",
-  "store_url": "https://apps.apple.com/us/app/ayikz/id6755466094",
+  "store_url": "https://apps.apple.com/us/app/id6755466094",
   "listed_at": "2025-11-25"
   },
   {
     "name": "032_Fzitay",
     "app_id": "6755903551",
-    "store_url": "https://apps.apple.com/ph/app/id6755903551",
+    "store_url": "https://apps.apple.com/us/app/id6755903551",
     "listed_at": "2025-12-02"
   },
   {
     "name": "033_Koizya",
     "app_id": "6756290698",
-    "store_url": "https://apps.apple.com/jp/app/id6756290698",
+    "store_url": "https://apps.apple.com/us/app/id6756290698",
     "listed_at": "2025-12-11"
   },
   {
     "name": "036_Baxoya",
     "app_id": "6756337396",
-    "store_url": "https://apps.apple.com/th/app/id6756337396",
+    "store_url": "https://apps.apple.com/us/app/id6756337396",
     "listed_at": "2025-12-13"
   },
   {
@@ -30,16 +30,10 @@
     "listed_at": "2025-12-17"
   },
   {
-    "name": "X034_test1",
-    "app_id": "63129890",
-    "store_url": "https://apps.apple.com/ph/app/id123456789012",
-    "listed_at": "2025-12-10"
-  },
-  {
-    "name": "X038_test2",
-    "app_id": "672131231",
-    "store_url": "https://apps.apple.com/ph/app/id1234556778",
-    "listed_at": "2025-12-10"
+    "name": "038_Yoripo",
+    "app_id": "6756511774",
+    "store_url": "https://apps.apple.com/ph/app/id6756511774",
+    "listed_at": "2025-12-22"
   }
 ]
 
